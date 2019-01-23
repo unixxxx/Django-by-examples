@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "mysite"
+		}
+	],
+	"settings": {
+		"python.pythonPath": "/Users/unix/.local/share/virtualenvs/mysite-XNqIzekp/bin/python"
+	}
+}
