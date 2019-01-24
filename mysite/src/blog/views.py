@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 from django.views.generic import ListView, View
 
 from taggit.models import Tag
 
 from .models import Post
-from .forms import EmailPostForm, CommentForm
+from .forms import EmailPostForm, CommentForm, SearchForm
 
 
 class PostListView(ListView):
@@ -64,3 +65,25 @@ class PostShareView(View):
         form = EmailPostForm(request.POST)
         sent = form.send_mail(request, post)
         return render(request, 'blog/post/share.html', {'form': form, 'post': post, 'sent': sent})
+
+
+class PostSearchView(View):
+    def get(self, request, format=None):
+        form = SearchForm()
+        results = []
+        query = None
+        if request.GET.get('query', None):
+            form = SearchForm(request.GET)
+            if form.is_valid():
+                query = form.cleaned_data['query']
+                search_vector = SearchVector('title', 'body')
+                search_query = SearchQuery(query)
+
+                results = Post.objects.annotate(
+                    similarity=TrigramSimilarity('title', query),
+                ).filter(similarity__gt=0.1).order_by('-similarity')
+        return render(request,
+                      'blog/post/search.html',
+                      {'form': form,
+                       'query': query,
+                       'results': results})
