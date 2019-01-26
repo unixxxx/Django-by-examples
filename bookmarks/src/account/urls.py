@@ -1,6 +1,10 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from .views import DashboardView
+from .views import (
+    DashboardView,
+    RegisterView,
+    EditView
+)
 
 urlpatterns = [
     path('', DashboardView.as_view(), name='dashboard'),
@@ -29,4 +33,7 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(
              template_name='account/password_reset_complete.html'),
          name='password_reset_complete'),
+
+    path('register/', RegisterView.as_view(), name='register'),
+    path('edit/<int:pk>', EditView.as_view(), name='edit')
 ]
