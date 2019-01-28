@@ -3,5 +3,6 @@
 *.code-workspace
 
 *.pyc
+*.sqlite3
 
 media
