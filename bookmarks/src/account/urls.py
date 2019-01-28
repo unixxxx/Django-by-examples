@@ -3,7 +3,10 @@ from django.contrib.auth import views as auth_views
 from .views import (
     DashboardView,
     RegisterView,
-    EditView
+    EditProfileView,
+    UserListView,
+    UserDetailView,
+    UserFollowView
 )
 
 urlpatterns = [
@@ -35,5 +38,9 @@ urlpatterns = [
          name='password_reset_complete'),
 
     path('register/', RegisterView.as_view(), name='register'),
-    path('edit/<int:pk>', EditView.as_view(), name='edit')
+    path('edit/<int:pk>', EditProfileView.as_view(), name='edit'),
+
+    path('users/', UserListView.as_view(), name='user_list'),
+    path('users/<username>/', UserDetailView.as_view(), name='user_detail'),
+    path('users/follow', UserFollowView.as_view(), name='user_follow')
 ]

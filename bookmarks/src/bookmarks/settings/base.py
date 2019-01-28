@@ -1,3 +1,4 @@
+from django.urls import reverse_lazy
 """
 Django settings for bookmarks project.
 
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
 
     'account.apps.AccountConfig',
     'images.apps.ImagesConfig',
+    'actions.apps.ActionsConfig'
 ]
 
 MIDDLEWARE = [
@@ -74,6 +76,12 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
     'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', '')
 
 ROOT_URLCONF = 'bookmarks.urls'
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: reverse_lazy('user_detail',
+                                        args=[u.username])
+}
 
 TEMPLATES = [
     {

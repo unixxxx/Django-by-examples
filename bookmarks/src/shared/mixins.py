@@ -1,8 +1,9 @@
 from django.http import HttpResponseBadRequest
+from django.views.generic import View
 
 
-class AjaxRequiredMixin():
+class AjaxRequiredMixin(View):
     def dispatch(self, request, *args, **kwargs):
         if not request.is_ajax():
             return HttpResponseBadRequest()
-        return super(AjaxRequiredMixin).dispatch(request, args, kwargs)
+        return super(AjaxRequiredMixin, self).dispatch(request, *args, **kwargs)

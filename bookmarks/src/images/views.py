@@ -10,7 +10,8 @@ from django.views.generic import View, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ImageCreateForm
 from .models import Image
-from .mixins import AjaxRequiredMixin
+from shared.mixins import AjaxRequiredMixin
+from actions.utils import create_action
 
 
 class ImageCreateView(LoginRequiredMixin, View):
@@ -29,6 +30,7 @@ class ImageCreateView(LoginRequiredMixin, View):
             # assign current user to the item
             new_item.user = request.user
             new_item.save()
+            create_action(request.user, 'bookmarked image', new_item)
             messages.success(request, 'Image added successfully')
 
             # redirect to new created item detail view
@@ -49,6 +51,7 @@ class ImageLikeView(LoginRequiredMixin, AjaxRequiredMixin, View):
                 image = Image.objects.get(id=image_id)
                 if action == 'like':
                     image.users_like.add(request.user)
+                    create_action(request.user, 'likes', image)
                 else:
                     image.users_like.remove(request.user)
                 return JsonResponse({'status': 'ok'})
@@ -57,27 +60,27 @@ class ImageLikeView(LoginRequiredMixin, AjaxRequiredMixin, View):
         return JsonResponse({'status': 'ko'})
 
 
-@login_required
-def image_list(request):
-    images = Image.objects.all()
-    paginator = Paginator(images, 8)
-    page = request.GET.get('page')
-    try:
-        images = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer deliver the first page
-        images = paginator.page(1)
-    except EmptyPage:
+class ImageListView(LoginRequiredMixin, View):
+    def get(self, request):
+        images = Image.objects.all()
+        paginator = Paginator(images, 8)
+        page = request.GET.get('page')
+        try:
+            images = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer deliver the first page
+            images = paginator.page(1)
+        except EmptyPage:
+            if request.is_ajax():
+                # If the request is AJAX and the page is out of range
+                # return an empty page
+                return HttpResponse('')
+            # If page is out of range deliver last page of results
+            images = paginator.page(paginator.num_pages)
         if request.is_ajax():
-            # If the request is AJAX and the page is out of range
-            # return an empty page
-            return HttpResponse('')
-        # If page is out of range deliver last page of results
-        images = paginator.page(paginator.num_pages)
-    if request.is_ajax():
+            return render(request,
+                          'images/image/list_ajax.html',
+                          {'section': 'images', 'images': images})
         return render(request,
-                      'images/image/list_ajax.html',
+                      'images/image/list.html',
                       {'section': 'images', 'images': images})
-    return render(request,
-                  'images/image/list.html',
-                  {'section': 'images', 'images': images})
