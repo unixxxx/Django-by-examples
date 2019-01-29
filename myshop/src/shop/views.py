@@ -45,5 +45,5 @@ class ProductDetailView(DetailView):
 
     def get_queryset(self):
         queryset = super(ProductDetailView, self).get_queryset()
-        queryset = queryset.filter(active=True)
+        queryset = queryset.filter(available=True)
         return queryset
