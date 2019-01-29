@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
+from cart.forms import CartAddProductForm
 from .models import (
     Category,
     Product
@@ -42,6 +43,9 @@ class ProductDetailView(DetailView):
     template_name = 'shop/product/detail.html'
     context_object_name = 'product'
     query_pk_and_slug = True
+    extra_context = {
+        'cart_product_form': CartAddProductForm()
+    }
 
     def get_queryset(self):
         queryset = super(ProductDetailView, self).get_queryset()
