@@ -12,6 +12,8 @@ pillow = "*"
 celery = "*"
 flower = "*"
 braintree = "*"
+django-rosetta = "*"
+django-parler = "*"
 
 [requires]
 python_version = "3.7"
