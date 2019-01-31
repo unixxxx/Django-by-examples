@@ -9,6 +9,7 @@ autopep8 = "*"
 [packages]
 django = "*"
 pillow = "*"
+django-braces = "*"
 
 [requires]
 python_version = "3.7"
